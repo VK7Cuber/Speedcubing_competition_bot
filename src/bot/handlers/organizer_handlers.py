@@ -97,7 +97,7 @@ async def comp_enter_name(message: Message, state: FSMContext) -> None:
 	await state.set_state(CompetitionStates.SelectDisciplines)
 	await message.answer(
 		"Введите коды дисциплин через запятую (например: 2x2,3x3,skewb,clock).\n"
-		"Список дисциплин смотрите в Documentation/List_of_WCA_disciplines.md"
+		"Список кодов дисциплин вы можете просмотреть с помощью команды /view_all_WCA_disciplines"
 	)
 
 
@@ -160,14 +160,47 @@ async def comp_upload_scrambles(message: Message, state: FSMContext) -> None:
 	comp_id: int = data["comp_id"]
 	d_id, d_code, attempts = upload_queue[0]
 	photos = message.photo
-	# accept only when multiple photos exist: Telegram sends sizes for a single photo; we need file_id of highest quality per photo
-	# Organizer should send exactly 'attempts' photos as separate media group ideally, but to simplify: we accept last size as best for this message
-	# If fewer photos than required, ask to re-send
+	# Support media groups (albums): Telegram sends each item as a separate message with the same media_group_id
+	group_id = message.media_group_id
+	if group_id:
+		group = data.get("pending_group", {"id": None, "files": [], "disc_id": d_id})
+		# reset if new group started or discipline changed
+		if group.get("id") != group_id or group.get("disc_id") != d_id:
+			group = {"id": group_id, "files": [], "disc_id": d_id}
+		# append highest quality size for this message
+		group["files"].append(photos[-1].file_id)
+		# validate
+		if len(group["files"]) > attempts:
+			await message.answer(f"Ожидалось {attempts} фото для {d_code} в одном альбоме. Отправлено больше. Пожалуйста, повторите отправку ровно {attempts} фото одним альбомом.")
+			await state.update_data(pending_group=None)
+			return
+		# progress
+		if len(group["files"]) < attempts:
+			await state.update_data(pending_group=group)
+			await message.answer(f"Принято {len(group['files'])}/{attempts} фото для {d_code}. Отправьте оставшиеся в этом же альбоме.")
+			return
+		# len == attempts -> save all
+		async for session in get_session():
+			# ensure no existing scrambles saved for current discipline
+			existing = await scramble_crud.list_by_competition_discipline(session, comp_id, d_id)
+			if existing:
+				await message.answer("Для этой дисциплины уже загружены скрамблы. Добавление отменено.")
+				await state.update_data(pending_group=None)
+				return
+			for idx, file_id in enumerate(group["files"], start=1):
+				await scramble_crud.upsert_scramble(session, comp_id, d_id, idx, file_id)
+			await session.commit()
+		await state.update_data(pending_group=None)
+		# move queue
+		upload_queue.pop(0)
+		await state.update_data(upload_queue=upload_queue)
+		await message.answer(f"Скрамблы для {d_code} загружены.")
+		await _prompt_next_upload(message, state)
+		return
+	# Fallback: single-photo per message flow (legacy)
 	if len(photos) < 1:
 		await message.answer("Не удалось получить фото. Повторите отправку.")
 		return
-	# store a single photo per message as attempt next-in-order; if multiple attempts needed, organizer should send attempts по одному сообщению
-	# Determine next attempt number from DB
 	async for session in get_session():
 		existing = await scramble_crud.list_by_competition_discipline(session, comp_id, d_id)
 		next_attempt = len(existing) + 1
@@ -178,7 +211,6 @@ async def comp_upload_scrambles(message: Message, state: FSMContext) -> None:
 		await scramble_crud.upsert_scramble(session, comp_id, d_id, next_attempt, file_id)
 		await session.commit()
 		if next_attempt == attempts:
-			# move queue
 			upload_queue.pop(0)
 			await state.update_data(upload_queue=upload_queue)
 			await message.answer(f"Скрамблы для {d_code} загружены.")

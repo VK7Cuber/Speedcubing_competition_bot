@@ -14,6 +14,17 @@ from src.database.crud import scramble as scramble_crud
 router = Router()
 
 
+@router.message(Command("view_all_WCA_disciplines"))
+async def view_all_wca_disciplines(message: Message) -> None:
+	async for session in get_session():
+		items = await discipline_crud.list_all(session)
+		if not items:
+			await message.answer("Справочник дисциплин пуст.")
+			return
+		text = "Доступные дисциплины WCA:\n" + "\n".join(f"- {d.name} (код: {d.code})" for d in items)
+		await message.answer(text)
+
+
 @router.message(Command("view_competition_disciplines"))
 async def view_competition_disciplines(message: Message) -> None:
 	parts = (message.text or "").split()
