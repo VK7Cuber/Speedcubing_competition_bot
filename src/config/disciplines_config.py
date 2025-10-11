@@ -1,0 +1,18 @@
+DISCIPLINES = [
+	{"name": "Кубик Рубика 2x2", "code": "2x2", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 3x3", "code": "3x3", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 4х4", "code": "4x4", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 5х5", "code": "5x5", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 6х6", "code": "6x6", "attempts_count": 3, "average_calculation_type": "mean_of_3", "dnf_threshold": 1, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 7х7", "code": "7x7", "attempts_count": 3, "average_calculation_type": "mean_of_3", "dnf_threshold": 1, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 3x3 OH (одной рукой)", "code": "3x3_oh", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 3х3 вслепую (Blind)", "code": "3x3_bld", "attempts_count": 3, "average_calculation_type": "best_of_3", "dnf_threshold": 3, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 4х4 вслепую (Blind)", "code": "4x4_bld", "attempts_count": 3, "average_calculation_type": "best_of_3", "dnf_threshold": 3, "max_time_minutes": 10},
+	{"name": "Кубик Рубика 5х5 вслепую (Blind)", "code": "5x5_bld", "attempts_count": 3, "average_calculation_type": "best_of_3", "dnf_threshold": 3, "max_time_minutes": 10},
+	{"name": "Мегаминкс", "code": "megaminx", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Пирамидка", "code": "pyraminx", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Скваер", "code": "square1", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Скьюб", "code": "skewb", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Клок (часы Рубика)", "code": "clock", "attempts_count": 5, "average_calculation_type": "ao5", "dnf_threshold": 2, "max_time_minutes": 10},
+	{"name": "Мультиблайнд", "code": "multi_bld", "attempts_count": 3, "average_calculation_type": "best_of_3", "dnf_threshold": 3, "max_time_minutes": 10},
+]

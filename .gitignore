@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Environments
+.venv/
+venv/
+.env
+.env.local
+
+# Packages
+*.egg-info/
+.eggs/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+
+# Alembic cache (optional)
+.alembic/
+
+# Local data
+scratches/
+
+# OS files
+.DS_Store
+Thumbs.db
+
